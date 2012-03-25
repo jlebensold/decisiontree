@@ -1,5 +1,5 @@
 describe("Node", function() {
-	var tree;
+	var tree,nodes,branches;
 	beforeEach(function() {
 	 tree = {
 					branches:	[
@@ -47,7 +47,9 @@ describe("Node", function() {
 							out: []
 						}
 					]
-				};
+				}		
+	 	nodes = _.map(tree.nodes,function(k) { return new Node(k); },this);
+		branches = _.map(tree.branches, function(k){ return new Branch(k); });;
 	});
 
 	it("should have a type", function() {
@@ -69,9 +71,7 @@ describe("Node", function() {
 		expect(JSON.stringify(n.asJSON())).toEqual('{"branches":[{"node":{"branches":[],"type":"decision"},"txt":"Engage Vendor"}],"type":"decision"}');
 	});
 
-	it("should be able to build a tree and calculate depth",function() {
-		var nodes = _.map(tree.nodes,function(k) { return new Node(k); },this);
-		var branches = _.map(tree.branches, function(k){ return new Branch(k); });
+	it("should be able to build a tree and calculate tree depth",function() {
 		nodes[0].addBranch(branches[0])
 		nodes[0].get('branches').last().set('node',nodes[1]);
 		
@@ -84,13 +84,26 @@ describe("Node", function() {
 		nodes[2].addBranch(branches[3]);
 		nodes[2].get('branches').last().set('node',nodes[4]);
 		
-		console.log(JSON.stringify(nodes[0].asJSON()));
-		expect(nodes[0].depth()).toEqual(3);
+		expect(nodes[0].treeDepth()).toEqual(3);
 	});
 
 	it("should enable tree construction from array keys",function() {
-		var nodes = _.map(tree.nodes,function(k) { return new Node(k); },this);
-		var branches = _.map(tree.branches, function(k){ return new Branch(k); });
+		expect(JSON.stringify(nodes[0].linkByKey(branches,nodes).asJSON())).toEqual('{"branches":[{"node":{"branches":[{"node":{"branches":[{"node":{"branches":[],"type":"end"},"txt":"Business approval"},{"node":{"branches":[],"type":"end"},"txt":"Business declines"}],"type":"chance"},"txt":"Present RFP to business"}],"type":"decision"},"txt":"Engage Vendor"}],"type":"decision"}');
 		
 	});
+	
+	it("each node be able to know its own depth", function() {
+		var n = nodes[0].linkByKey(branches,nodes);
+		n.get('branches').last().get('node').depth();
+
+	});
+
+
+	it("should return items by depth",function() {
+		var n = nodes[0].linkByKey(branches,nodes);
+		expect(n.depth()).toEqual(1);
+		expect(n.get('branches').last().get('node').depth()).toEqual(3);
+		expect(n.get('branches').last().get('node').get('branches').last().get('node').depth()).toEqual(5);
+	});
+
 });
