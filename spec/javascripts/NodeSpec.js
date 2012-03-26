@@ -49,7 +49,9 @@ describe("Node", function() {
 					]
 				}		
 	 	nodes = _.map(tree.nodes,function(k) { return new Node(k); },this);
-		branches = _.map(tree.branches, function(k){ return new Branch(k); });;
+		branches = _.map(tree.branches, function(k){ return new Branch(k); });
+		$(".testbed").remove();
+		$("body").append("<div style='background:#CFCFCF;width:900px;height:500px;' class='testbed'></div>");
 	});
 
 	it("should have a type", function() {
@@ -84,7 +86,7 @@ describe("Node", function() {
 		nodes[2].addBranch(branches[3]);
 		nodes[2].get('branches').last().set('node',nodes[4]);
 		
-		expect(nodes[0].treeDepth()).toEqual(3);
+		expect(nodes[0].treeDepth()).toEqual(4);
 	});
 
 	it("should enable tree construction from array keys",function() {
@@ -102,8 +104,21 @@ describe("Node", function() {
 	it("should return items by depth",function() {
 		var n = nodes[0].linkByKey(branches,nodes);
 		expect(n.depth()).toEqual(1);
-		expect(n.get('branches').last().get('node').depth()).toEqual(3);
-		expect(n.get('branches').last().get('node').get('branches').last().get('node').depth()).toEqual(5);
+		expect(n.get('branches').last().get('node').depth()).toEqual(2);
+		expect(n.get('branches').last().get('node').get('branches').last().get('node').depth()).toEqual(3);
 	});
 
+
+	it("should draw in the correct column", function() {
+		$(".testbed").append("<div style='position:relative;width:900px;height:500px;' id='cvs'><canvas style='position: absolute;left:0;top:0;' width='900' height='500'></canvas></div>");
+
+
+		var n = nodes[0].linkByKey(branches,nodes);
+		var v = new GraphView({model:n,el:$("#cvs") });
+	
+		expect(v.columns()).toEqual(4);
+
+		v.drawColumns();
+
+	});
 });
