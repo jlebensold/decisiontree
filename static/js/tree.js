@@ -49,6 +49,11 @@ window.GraphView = Backbone.View.extend({
 
 
 		branches.each(function(b) {
+			if (b.get('node') == null)
+		{
+			console.log(b,"undefined node");
+			return;
+		}
 			this.drawNode(b.get('node'));
 
 			ctx.lineWidth = 1;
@@ -60,10 +65,8 @@ window.GraphView = Backbone.View.extend({
 			ctx.lineTo(dst.left,dst.top -60 - 30);
 			ctx.stroke();
 			
-			
 			var l =  (dst.left - src.left) * (b.get('backnode').depth()) - 120;
 			ctx.fillText(b.get('txt'),l, (src.top + dst.top / 2)- 160);
-
 
 
 		},this);
@@ -89,6 +92,11 @@ window.Branch = Backbone.Model.extend({
 			node: (this.get('node') != null) ? this.get('node').asJSON() : null,
 			txt:	this.get('txt')
 		};
+	},
+
+	addNode: function(n) {
+		this.set('node',new Node(n));
+		this.get('node').set('backbranch',this);
 	},
 
 	linkByKey: function(branches, nodes) {
@@ -121,7 +129,27 @@ window.Node = Backbone.Model.extend({
 	initialize: function() {
 		this.set('branches',new BranchCollection);
 	},
-	
+	branchByKey: function(key) {
+		var result = this.get('branches').find(function(b) { 
+			return b.get('key') == key; 
+		},this);
+
+		if (result != undefined)
+			return result;
+		this.get('branches').each(function(b) {
+			var r = b.get('node').branchByKey(key);
+			if (r != undefined) 
+				result = r;
+		},this);
+
+		if (result != undefined) 
+			return result;
+		return false;
+
+		
+	},
+
+
 	addBranch: function(b) {
 		if (!(b instanceof Branch))
 			b = new Branch({backnode: this,txt:b.txt,key:b.key});

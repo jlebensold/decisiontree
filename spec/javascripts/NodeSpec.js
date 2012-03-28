@@ -108,16 +108,30 @@ describe("Node", function() {
 		expect(n.get('branches').last().get('node').get('branches').last().get('node').depth()).toEqual(3);
 	});
 
+	it("should allow searching branches by key", function() {
+
+		var n = nodes[0].linkByKey(branches,nodes);
+		expect(n.branchByKey("engage").get('txt')).toEqual('Engage Vendor');
+		expect(n.branchByKey("bus-approval").get('txt')).toEqual('Business approval');
+	});
+
 
 	it("should draw in the correct column", function() {
 		$(".testbed").append("<div style='position:relative;width:900px;height:500px;' id='cvs'><canvas style='position: absolute;left:0;top:0;' width='900' height='500'></canvas></div>");
 
+		tree.branches.push({ txt: "foo", key: "bar"});
+		tree.nodes.push({type:"end",out:[], inc: ["bar"]});
+		tree.nodes[1].out =  ["present-to-business", "bar"];
+		
+		nodes = _.map(tree.nodes,function(k) { return new Node(k); },this);
+		branches = _.map(tree.branches, function(k){ return new Branch(k); });
 
 		var n = nodes[0].linkByKey(branches,nodes);
-		var v = new GraphView({model:n,el:$("#cvs") });
-	
-		expect(v.columns()).toEqual(4);
 
+		var v = new GraphView({model:n,el:$("#cvs") });
+
+		n.get('branches').first().get('node').addBranch({txt:"test",key:"baz"});
+		n.branchByKey("baz").addNode({type:'end'});
 		v.drawColumns();
 
 	});
