@@ -13,7 +13,6 @@
 src_files:
     - static/js/jquery-1.7.2.min.js
     - static/js/underscore.min.js
-    - public/javascripts/**/*.js
     - static/js/**/*.js
 
 # stylesheets

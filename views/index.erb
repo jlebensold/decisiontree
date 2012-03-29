@@ -33,57 +33,57 @@
 	<div class="container">
 			<section class="row" style="margin-top: 40px;">
 				<h2>Decision Tree</h2>
-				<div class="tree" id="tree" style="background: #CFCFCF; width: 100%; height:500px;">
+				<div class="tree" id="tree" style="background: #CFCFCF; width: 100%; heightype:500px;">
 
 				</div>
 			</section>
 	  	<footer> 
       </footer> 
- 
+	 
     </div> <!-- /container -->
 		<script>
 			var tree = {
 				branches:	[
 					{
 						txt: "Engage Vendor",
-						id:"engage"
+						key:"engage"
 					},
 					{
 						txt: "Present RFP to business",
-						id:"present-to-business"
+						key:"present-to-business"
 					},
 					{
 						txt: "Business approval",
-						id:"bus-approval"
+						key:"bus-approval"
 					},
 					{
 						txt:	"Business declines",
-						id:		"bus-decline"
+						key:		"bus-decline"
 					}
 				],
 				nodes: [
 					{
-						t: "decision",
+						type: "decision",
 						inc: [],
 						out: ["engage"]
 					},
 					{
-						t: "decision",
+						type: "decision",
 						inc: ["engage"],
 						out: ["present-to-business"]
 					},
 					{
-						t:		"chance",
+						type:		"chance",
 						inc:	["present-to-business"],
 						out:	["bus-approval","bus-decline"]
 					},
 					{
-						t:		"end",
+						type:		"end",
 						inc:	["bus-approval"],
 						out: []
 					},
 					{
-						t:		"end",
+						type:		"end",
 						inc:	["bus-decline"],
 						out: []
 					}
@@ -92,8 +92,21 @@
 		</script>
 		<script>
 			 $(function() { 
-				 window.app = new AppView({el: $("#tree"), model: tree});
+				 window.app = new AppView({el: $("#tree")});
+				 window.app.setTree(tree);
+				 window.app.render();
 			 });
-		</script>
+		 </script>
+		 <style>
+			.node {
+				border: 1px solid #000;
+				background: #FFF;
+				width: 20px;
+				height: 20px;
+				overflow: hidden;
+				clear: left;
+				float: left;
+			}
+		 </style>
 	</body> 
 </html>
